@@ -1,31 +1,26 @@
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
 import 'package:flutter/material.dart';
-import 'package:locker_management/screens/tabs/addTab.dart';
+import 'package:locker_management/screens/tabs/allLocker.dart';
+import 'package:locker_management/screens/tabs/myLocker.dart';
 import 'package:locker_management/screens/tabs/profileTab.dart';
-import 'package:locker_management/screens/tabs/statusTab.dart';
-import 'package:locker_management/screens/tabs/usersTab.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+class UserHome extends StatefulWidget {
+  const UserHome({super.key});
 
   @override
-  State<Home> createState() => _HomeState();
+  State<UserHome> createState() => _UserHomeState();
 }
 
-class _HomeState extends State<Home> {
+class _UserHomeState extends State<UserHome> {
   List<TabItem> items = [
     TabItem(
-      icon: Icons.add,
-      title: 'Add',
+      icon: Icons.privacy_tip_rounded,
+      title: 'My Locker',
     ),
     TabItem(
       icon: Icons.auto_awesome_motion,
-      title: 'Status',
-    ),
-    TabItem(
-      icon: Icons.account_circle,
-      title: 'Users',
+      title: 'All Lockers',
     ),
     TabItem(
       icon: Icons.account_circle_outlined,
@@ -51,11 +46,9 @@ class _HomeState extends State<Home> {
         body: Stack(
       children: [
         visit == 0
-            ? AddTab()
+            ? MyLocker()
             : visit == 1
-                ? StatusTab()
-                : visit == 2
-                    ? UsersTab()
+                ? AllLocker()
                     : ProfileTab(),
         Positioned(
           right: 0,

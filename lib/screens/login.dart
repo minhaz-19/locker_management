@@ -32,7 +32,12 @@ class _LoginState extends State<Login> {
     });
     final email = await getDataFromDevice('email') ?? "";
     final password = await getDataFromDevice('password') ?? "";
-    if (email != "") {}
+    final token = await getDataFromDevice('token') ?? "";
+    if (token == "") {
+      // login
+    }
+    // call api to update user details
+    // and send to the next screen accordingly as user or admin
 
     setState(() {
       _isLoading = false;
