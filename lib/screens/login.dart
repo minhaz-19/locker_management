@@ -17,6 +17,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   bool _isLoading = false;
 
   @override
@@ -72,196 +73,128 @@ class _LoginState extends State<Login> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
-                                    child: Text(
-                                      'Locker Management',
-                                      style: TextStyle(
-                                        fontSize: 25,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
-                                child: Text(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _buildTextField(
                                   'Email',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  _emailController,
+                                  keyboardType: TextInputType.emailAddress,
                                 ),
-                              ),
-                              TextFormField(
-                                controller: _emailController,
-                                keyboardType: TextInputType.emailAddress,
-                                style: const TextStyle(fontSize: 18),
-                                cursorColor: Colors.black54,
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 0,
-                                  ),
-                                  hintText: 'Enter your email',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.green[100],
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(191, 153, 245, 1),
-                                      width: 2.0,
-                                    ),
-                                  ),
-                                ),
-                                onSaved: (newValue) {
-                                  setState(() {
-                                    // Handle the value if needed
-                                  });
-                                },
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
-                                child: Text(
+                                _buildTextField(
                                   'Password',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  _passwordController,
+                                  obscureText: true,
                                 ),
-                              ),
-                              TextFormField(
-                                controller: _passwordController,
-                                obscureText: true,
-                                keyboardType: TextInputType.visiblePassword,
-                                style: const TextStyle(fontSize: 18),
-                                cursorColor: Colors.black54,
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 0,
-                                  ),
-                                  hintText: 'Enter your password',
-                                  hintStyle: const TextStyle(
-                                    color: Colors.black54,
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.green[100],
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(191, 153, 245, 1),
-                                      width: 2.0,
-                                    ),
-                                  ),
-                                ),
-                                onSaved: (newValue) {
-                                  setState(() {
-                                    // Handle the value if needed
-                                  });
-                                },
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  // Navigator.push(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //         builder: (context) =>
-                                  //             const RecoverPassword()));
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    0,
-                                    15,
-                                    8,
-                                    8,
-                                  ),
-                                  child: Text(
-                                    'Forgot Password?',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              WideButton(
-                                'Login',
-                                onPressed: () async {
-                                  setState(() {
-                                    // _isLoading = true;
-                                  });
-                                },
-                                backgroundcolor: Theme.of(context).primaryColor,
-                                textColor: Colors.white,
-                              ),
-                              const SizedBox(height: 10),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 30),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'Don\'t have an account? ',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
+
+                                const SizedBox(height: 20),
+                                WideButton(
+                                  'Login',
+                                  onPressed: () async {
+                                    // navigate to home page
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const Home(),
                                       ),
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) => const SignUp(),
-                                          ),
-                                        );
-                                      },
-                                      child: Text(
-                                        'Sign Up',
+                                    );
+                                    setState(() {
+                                      // Handle login action
+                                    });
+                                  },
+                                  backgroundcolor:
+                                      Theme.of(context).primaryColor,
+                                  textColor: Colors.white,
+                                ),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 30),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text(
+                                        "Don't have an account? ",
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.pink[400],
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => const SignUp(),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          'Sign Up',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.pink[400],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    // Align the last widget to the center bottom
                   ],
                 ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 15, 8, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            style: const TextStyle(fontSize: 18),
+            cursorColor: Colors.black54,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+              hintText: 'Enter your $label',
+              hintStyle: const TextStyle(color: Colors.black54),
+              filled: true,
+              fillColor: Colors.green[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: Color.fromRGBO(191, 153, 245, 1),
+                  width: 2.0,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

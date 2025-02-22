@@ -14,10 +14,10 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _nameEditingController = TextEditingController();
-  final TextEditingController _mobileEditingController =
-      TextEditingController();
-  String? gender;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _statusController = TextEditingController();
+  String? _selectedRole = 'Student';
 
   bool _isLoading = false;
 
@@ -45,7 +45,6 @@ class _SignUpState extends State<SignUp> {
                       right: 0,
                       top: MediaQuery.of(context).size.height * 0.28,
                       child: Container(
-                        height: MediaQuery.of(context).size.height * 0.7,
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.only(
@@ -54,238 +53,72 @@ class _SignUpState extends State<SignUp> {
                           ),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                          padding: const EdgeInsets.all(15.0),
                           child: SingleChildScrollView(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
-                                      child: Text(
-                                        'Muslim Child App',
-                                        style: TextStyle(
-                                          fontSize: 25,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                _buildTextField(
+                                  'Name',
+                                  'Enter your name',
+                                  _nameController,
+                                  TextInputType.name,
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
-                                  child: Text(
-                                    'Name',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                _buildTextField(
+                                  'Mobile',
+                                  'Enter your mobile number',
+                                  _mobileController,
+                                  TextInputType.phone,
                                 ),
-                                TextFormField(
-                                  controller: _nameEditingController,
-                                  keyboardType: TextInputType.name,
-                                  style: const TextStyle(fontSize: 18),
-                                  cursorColor: Colors.black54,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 0,
-                                    ),
-                                    hintText: 'Enter your name',
-                                    hintStyle: const TextStyle(
-                                      color: Colors.black54,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.green[100],
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: Color.fromRGBO(191, 153, 245, 1),
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                  onSaved: (newValue) {
-                                    setState(() {
-                                      // Handle the value if needed
-                                    });
-                                  },
+                                _buildTextField(
+                                  'Email',
+                                  'Enter your email',
+                                  _emailController,
+                                  TextInputType.emailAddress,
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
-                                  child: Text(
-                                    'Mobile Number',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                                _buildTextField(
+                                  'Password',
+                                  'Enter your password',
+                                  _passwordController,
+                                  TextInputType.visiblePassword,
+                                  obscureText: true,
                                 ),
-                                TextFormField(
-                                  controller: _mobileEditingController,
-                                  keyboardType: TextInputType.number,
-                                  style: const TextStyle(fontSize: 18),
-                                  cursorColor: Colors.black54,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 0,
-                                    ),
-                                    hintText: 'Enter your mobile number',
-                                    hintStyle: const TextStyle(
-                                      color: Colors.black54,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.green[100],
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: Color.fromRGBO(191, 153, 245, 1),
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                  onSaved: (newValue) {
-                                    setState(() {
-                                      // Handle the value if needed
-                                    });
-                                  },
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
-                                  child: Text(
-                                    'Gender',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                // create a checkbox list for male or female
-                                Row(
-                                  children: [
-                                    Radio<String>(
-                                      value: 'Male',
-                                      groupValue: gender,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          gender = value;
-                                        });
-                                      },
-                                    ),
-                                    Text(
-                                      'Male',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.black54,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Radio<String>(
-                                      value: 'Female',
-                                      groupValue: gender,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          gender = value;
-                                        });
-                                      },
-                                    ),
-                                    Text(
-                                      'Female',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.black54,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
-                                  child: Text(
-                                    'Email',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                TextFormField(
-                                  controller: _emailController,
-                                  keyboardType: TextInputType.emailAddress,
-                                  style: const TextStyle(fontSize: 18),
-                                  cursorColor: Colors.black54,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 0,
-                                    ),
-                                    hintText: 'Enter your email',
-                                    hintStyle: const TextStyle(
-                                      color: Colors.black54,
-                                    ),
-                                    filled: true,
-                                    fillColor: Colors.green[100],
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: Color.fromRGBO(191, 153, 245, 1),
-                                        width: 2.0,
-                                      ),
-                                    ),
-                                  ),
-                                  onSaved: (newValue) {
-                                    setState(() {
-                                      // Handle the value if needed
-                                    });
-                                  },
+                                _buildTextField(
+                                  'Status',
+                                  'Enter your status',
+                                  _statusController,
+                                  TextInputType.text,
                                 ),
 
                                 const Padding(
                                   padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
                                   child: Text(
-                                    'Password',
+                                    'Role',
                                     style: TextStyle(
                                       fontSize: 18,
-                                      color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-                                TextFormField(
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  keyboardType: TextInputType.visiblePassword,
-                                  style: const TextStyle(fontSize: 18),
-                                  cursorColor: Colors.black54,
+                                DropdownButtonFormField<String>(
+                                  value: _selectedRole,
+                                  items:
+                                      ['Student', 'Teacher', 'Visitor'].map((
+                                        role,
+                                      ) {
+                                        return DropdownMenuItem(
+                                          value: role,
+                                          child: Text(role),
+                                        );
+                                      }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedRole = value;
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                     contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 20,
-                                      vertical: 0,
-                                    ),
-                                    hintText: 'Enter your password',
-                                    hintStyle: const TextStyle(
-                                      color: Colors.black54,
                                     ),
                                     filled: true,
                                     fillColor: Colors.green[100],
@@ -293,43 +126,29 @@ class _SignUpState extends State<SignUp> {
                                       borderRadius: BorderRadius.circular(10),
                                       borderSide: BorderSide.none,
                                     ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: Color.fromRGBO(191, 153, 245, 1),
-                                        width: 2.0,
-                                      ),
-                                    ),
                                   ),
-                                  onSaved: (newValue) {
-                                    setState(() {
-                                      // Handle the value if needed
-                                    });
-                                  },
                                 ),
                                 const SizedBox(height: 20),
                                 WideButton(
                                   'Sign Up',
                                   onPressed: () async {
-                                    if (_nameEditingController.text
-                                        .trim()
-                                        .isEmpty) {
+                                    if (_nameController.text.trim().isEmpty) {
                                       Fluttertoast.showToast(
                                         msg: 'Enter your name',
                                       );
-                                    } else if (_mobileEditingController.text
+                                    } else if (_mobileController.text
                                         .trim()
                                         .isEmpty) {
                                       Fluttertoast.showToast(
                                         msg: 'Please enter your mobile number',
                                       );
-                                    } else if (gender == null) {
+                                    } else if (_selectedRole == null) {
                                       Fluttertoast.showToast(
-                                        msg: 'Please select your gender',
+                                        msg: 'Please select your role',
                                       );
                                     } else {
                                       setState(() {
-                                        // _isLoading = true;
+                                        _isLoading = true;
                                       });
                                     }
                                   },
@@ -351,7 +170,6 @@ class _SignUpState extends State<SignUp> {
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
-                                            color: Colors.black,
                                           ),
                                         ),
                                         InkWell(
@@ -383,9 +201,44 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                     ),
-                    // Align the last widget to the center bottom
                   ],
                 ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    String label,
+    String hint,
+    TextEditingController controller,
+    TextInputType type, {
+    bool obscureText = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          TextFormField(
+            controller: controller,
+            keyboardType: type,
+            obscureText: obscureText,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+              hintText: hint,
+              filled: true,
+              fillColor: Colors.green[100],
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
