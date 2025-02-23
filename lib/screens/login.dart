@@ -48,6 +48,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.green[200],
         body:
             _isLoading
                 ? const ProgressBar()
