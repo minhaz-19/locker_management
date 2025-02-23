@@ -6,6 +6,7 @@ class UserDetailsProvider with ChangeNotifier {
   static String userId = '';
   static String userRole = '';
   static String userMobile = '';
+  static String userToken = '';
   void updateName(String name) {
     userName = name;
     notifyListeners();
@@ -49,5 +50,14 @@ class UserDetailsProvider with ChangeNotifier {
 
   String getRole() {
     return userRole;
+  }
+
+  void updateToken(String token) {
+    userToken = token;
+    notifyListeners();
+  }
+
+  String getToken() {
+    return userToken;
   }
 }

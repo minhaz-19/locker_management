@@ -1,8 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/component/shared_preference.dart';
 import 'package:locker_management/component/wide_button.dart';
+import 'package:locker_management/provider/userDetailsProvider.dart';
 import 'package:locker_management/screens/home.dart';
 import 'package:locker_management/screens/signup.dart';
 
@@ -26,6 +28,14 @@ class _LoginState extends State<Login> {
     super.initState();
   }
 
+  Future<void> getToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+    if (token != null) {
+      await saveDataToDevice('token', token);
+      UserDetailsProvider().updateToken(token);
+    }
+  }
+
   void initializeLogin() async {
     setState(() {
       _isLoading = true;
@@ -33,6 +43,7 @@ class _LoginState extends State<Login> {
     final email = await getDataFromDevice('email') ?? "";
     final password = await getDataFromDevice('password') ?? "";
     final token = await getDataFromDevice('token') ?? "";
+    UserDetailsProvider().updateToken(token);
     if (token == "") {
       // login
     }
@@ -99,15 +110,16 @@ class _LoginState extends State<Login> {
                                   'Login',
                                   onPressed: () async {
                                     // navigate to home page
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const Home(),
-                                      ),
-                                    );
-                                    setState(() {
-                                      // Handle login action
-                                    });
+                                    // Navigator.pushReplacement(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (context) => const Home(),
+                                    //   ),
+                                    // );
+                                    // setState(() {
+                                    //   // Handle login action
+                                    // });
+                                    getToken();
                                   },
                                   backgroundcolor:
                                       Theme.of(context).primaryColor,

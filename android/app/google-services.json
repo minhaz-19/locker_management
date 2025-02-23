@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "469781913387",
+    "project_id": "locker-f2577",
+    "storage_bucket": "locker-f2577.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469781913387:android:99830e9386249bb264af6e",
+        "android_client_info": {
+          "package_name": "com.ruetcse.locker_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBhykBBN4Es2D0cEYf6ykAQAYm3sAthsE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

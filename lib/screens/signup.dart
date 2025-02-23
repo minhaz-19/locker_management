@@ -1,7 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/component/progressbar.dart';
+import 'package:locker_management/component/shared_preference.dart';
 import 'package:locker_management/component/wide_button.dart';
+import 'package:locker_management/provider/userDetailsProvider.dart';
 import 'package:locker_management/screens/login.dart';
 
 class SignUp extends StatefulWidget {
@@ -20,6 +23,14 @@ class _SignUpState extends State<SignUp> {
   String? _selectedRole = 'Student';
 
   bool _isLoading = false;
+
+  Future<void> getToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+    if (token != null) {
+      await saveDataToDevice('token', token);
+      UserDetailsProvider().updateToken(token);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,9 +115,7 @@ class _SignUpState extends State<SignUp> {
                                 DropdownButtonFormField<String>(
                                   value: _selectedRole,
                                   items:
-                                      ['Student', 'Teacher', 'Visitor'].map((
-                                        role,
-                                      ) {
+                                      ['Student', 'Visitor'].map((role) {
                                         return DropdownMenuItem(
                                           value: role,
                                           child: Text(role),
