@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/component/shared_preference.dart';
 import 'package:locker_management/component/wide_button.dart';
@@ -19,7 +20,6 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
-  final TextEditingController _statusController = TextEditingController();
   String? _selectedRole = 'Student';
 
   bool _isLoading = false;
@@ -29,6 +29,37 @@ class _SignUpState extends State<SignUp> {
     if (token != null) {
       await saveDataToDevice('token', token);
       UserDetailsProvider().updateToken(token);
+    }
+  }
+
+  Future<bool> signUp() async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _mobileController.text.trim();
+    final password = _passwordController.text.trim();
+    final roles = _selectedRole;
+    final status = 'active';
+    final firebaseToken = await getDataFromDevice('token') ?? "aaaaa";
+
+    try {
+      final response = await ApiResponse().signUp(
+        name,
+        email,
+        phone,
+        password,
+        roles,
+        status,
+        firebaseToken,
+      );
+      Fluttertoast.showToast(msg: response.statusCode.toString());
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        Fluttertoast.showToast(msg: response.data['message']);
+        return false;
+      }
+    } catch (e) {
+      return false;
     }
   }
 
@@ -95,12 +126,6 @@ class _SignUpState extends State<SignUp> {
                                   TextInputType.visiblePassword,
                                   obscureText: true,
                                 ),
-                                _buildTextField(
-                                  'Status',
-                                  'Enter your status',
-                                  _statusController,
-                                  TextInputType.text,
-                                ),
 
                                 const Padding(
                                   padding: EdgeInsets.fromLTRB(0, 15, 8, 8),
@@ -159,6 +184,22 @@ class _SignUpState extends State<SignUp> {
                                     } else {
                                       setState(() {
                                         _isLoading = true;
+                                      });
+                                      final isSignedUp = await signUp();
+                                      if (isSignedUp) {
+                                        Fluttertoast.showToast(
+                                          msg:
+                                              "SignUp completed\nPlease login to continue",
+                                        );
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const Login(),
+                                          ),
+                                        );
+                                      }
+                                      setState(() {
+                                        _isLoading = false;
                                       });
                                     }
                                   },

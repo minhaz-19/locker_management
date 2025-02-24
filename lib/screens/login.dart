@@ -1,12 +1,17 @@
+import 'dart:io';
+
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/component/shared_preference.dart';
 import 'package:locker_management/component/wide_button.dart';
 import 'package:locker_management/provider/userDetailsProvider.dart';
 import 'package:locker_management/screens/home.dart';
 import 'package:locker_management/screens/signup.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Login extends StatefulWidget {
   final bool fromStart;
@@ -28,12 +33,24 @@ class _LoginState extends State<Login> {
     super.initState();
   }
 
-  Future<void> getToken() async {
-    String? token = await FirebaseMessaging.instance.getToken();
-    if (token != null) {
-      await saveDataToDevice('token', token);
-      UserDetailsProvider().updateToken(token);
-    }
+  Future<void> signIn(email, password) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final response = await ApiResponse().signIn(email, password);
+      if (response.statusCode == 200) {
+        await saveDataToDevice('email', email);
+        await saveDataToDevice('password', password);
+        await saveDataToDevice('token', response.data['second']);
+        UserDetailsProvider().updateToken(response.data['second']);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Home()),
+        );
+      }
+    } catch (e) {}
   }
 
   void initializeLogin() async {
@@ -42,10 +59,16 @@ class _LoginState extends State<Login> {
     });
     final email = await getDataFromDevice('email') ?? "";
     final password = await getDataFromDevice('password') ?? "";
-    final token = await getDataFromDevice('token') ?? "";
-    UserDetailsProvider().updateToken(token);
-    if (token == "") {
-      // login
+    if (email.isNotEmpty && password.isNotEmpty) {
+      try {
+        await signIn(email, password);
+      } catch (e) {
+        removeDataFromDevice('email');
+        removeDataFromDevice('password');
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
     // call api to update user details
     // and send to the next screen accordingly as user or admin
@@ -119,7 +142,10 @@ class _LoginState extends State<Login> {
                                     // setState(() {
                                     //   // Handle login action
                                     // });
-                                    getToken();
+                                    await signIn(
+                                      _emailController.text,
+                                      _passwordController.text,
+                                    );
                                   },
                                   backgroundcolor:
                                       Theme.of(context).primaryColor,

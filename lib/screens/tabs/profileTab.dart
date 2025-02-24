@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:locker_management/component/shared_preference.dart';
 import 'package:locker_management/provider/userDetailsProvider.dart';
+import 'package:locker_management/screens/login.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -147,6 +149,44 @@ class _ProfileTabState extends State<ProfileTab> {
       appBar: AppBar(
         title: const Text("Profile", style: TextStyle(color: Colors.white)),
         centerTitle: true,
+        // place a logout button in the appbar
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.red),
+            onPressed: () {
+              // show a dialog to confirm logout
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Logout"),
+                    content: const Text("Are you sure you want to logout?"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Implement logout logic here
+                          removeDataFromDevice('email');
+                          removeDataFromDevice('password');
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => Login()),
+                            (route) =>
+                                false, // This removes all previous routes
+                          );
+                        },
+                        child: const Text("Logout"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
