@@ -50,7 +50,11 @@ class _LoginState extends State<Login> {
           MaterialPageRoute(builder: (context) => const Home()),
         );
       }
-    } catch (e) {}
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void initializeLogin() async {

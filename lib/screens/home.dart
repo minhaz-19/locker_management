@@ -1,7 +1,7 @@
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
 import 'package:flutter/material.dart';
-import 'package:locker_management/screens/tabs/addTab.dart';
+import 'package:locker_management/screens/tabs/add.dart';
 import 'package:locker_management/screens/tabs/profileTab.dart';
 import 'package:locker_management/screens/tabs/statusTab.dart';
 import 'package:locker_management/screens/tabs/usersTab.dart';
@@ -32,6 +32,8 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
