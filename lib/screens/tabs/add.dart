@@ -123,10 +123,12 @@ class _AddTabState extends State<AddTab> {
                         title: Text(building.name),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
+                          onPressed: () async {
                             setState(() {
-                              buildings.remove(building);
+                              _isLoading = true;
                             });
+                            await ApiResponse().deleteBuildings(building.id);
+                            await getAllBuildings();
                             Navigator.pop(context);
                           },
                         ),
@@ -147,23 +149,96 @@ class _AddTabState extends State<AddTab> {
   }
 
   void _showAddLockerDialog(int index) {
-    TextEditingController lockersController = TextEditingController();
+    TextEditingController lockerIdController = TextEditingController();
+    TextEditingController buildingIdController = TextEditingController();
+    TextEditingController locationController = TextEditingController();
+
+    String selectedStatus = "available";
+    String selectedType = "permanent";
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Add Lockers"),
-          content: TextField(
-            controller: lockersController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: "Number of Lockers"),
+          title: const Text("Add Locker"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Location Input
+                TextField(
+                  controller: locationController,
+                  decoration: const InputDecoration(labelText: "Location"),
+                ),
+                const SizedBox(height: 10),
+
+                // Status Dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedStatus,
+                  items:
+                      ["available", "reserved", "overdue"]
+                          .map(
+                            (status) => DropdownMenuItem(
+                              value: status,
+                              child: Text(status),
+                            ),
+                          )
+                          .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      selectedStatus = value;
+                    }
+                  },
+                  decoration: const InputDecoration(labelText: "Status"),
+                ),
+                const SizedBox(height: 10),
+
+                // Type Dropdown
+                DropdownButtonFormField<String>(
+                  value: selectedType,
+                  items:
+                      ["permanent", "temporary"]
+                          .map(
+                            (type) => DropdownMenuItem(
+                              value: type,
+                              child: Text(type),
+                            ),
+                          )
+                          .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      selectedType = value;
+                    }
+                  },
+                  decoration: const InputDecoration(labelText: "Type"),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text("Cancel"),
             ),
-            ElevatedButton(onPressed: () {}, child: const Text("Add")),
+            ElevatedButton(
+              onPressed: () async {
+                setState(() {
+                  _isLoading = true;
+                });
+                await ApiResponse().addLocker(
+                  buildings[index].id,
+                  selectedStatus,
+                  selectedType,
+                  locationController.text,
+                );
+                await getAllBuildings();
+                setState(() {
+                  _isLoading = false;
+                });
+                Navigator.pop(context);
+              },
+              child: const Text("Add"),
+            ),
           ],
         );
       },
@@ -180,6 +255,7 @@ class _AddTabState extends State<AddTab> {
           content: TextField(
             controller: lockerIdController,
             decoration: InputDecoration(labelText: "Locker ID"),
+            keyboardType: TextInputType.number,
           ),
           actions: [
             TextButton(
@@ -187,8 +263,17 @@ class _AddTabState extends State<AddTab> {
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
-                setState(() {});
+              onPressed: () async {
+                setState(() {
+                  _isLoading = true;
+                });
+                await ApiResponse().deleteLocker(
+                  int.parse(lockerIdController.text),
+                );
+                await getAllBuildings();
+                setState(() {
+                  _isLoading = false;
+                });
                 Navigator.pop(context);
               },
               child: const Text("Delete"),
