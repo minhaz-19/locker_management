@@ -69,7 +69,7 @@ class ApiResponse {
     }
   }
 
- Future<List<Buildings>> fetchBuildings() async {
+  Future<List<Buildings>> fetchBuildings() async {
     try {
       final token = UserDetailsProvider().getToken();
 
@@ -88,43 +88,66 @@ class ApiResponse {
         List<dynamic> data = response.data; // Directly access response data
         return data.map((item) => Buildings.fromJson(item)).toList();
       } else {
-        print('first ' + response.data.toString());
         throw Exception("Failed to load buildings");
       }
     } catch (e) {
       if (e is DioException) {
-        print('first ' + (e.response?.data?.toString() ?? 'No response data'));
         Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
 
         throw Exception("API Error: ${e.response?.data}");
       } else {
-        print('first ' + e.toString());
         Fluttertoast.showToast(msg: "Error: $e");
         throw Exception(e);
       }
     }
   }
-  // // Check for the new token
-  // Future<Response<dynamic>> newToken() async {
-  //   final response = await dio.post("$baseUrl/api/v1/auth/token");
-  //   providerToken().updateToken(response.data['data']['token']);
-  //   return response;
-  // }
 
-  // Future<dynamic> getToken() async {
-  //   final Directory appDocDir = await getApplicationDocumentsDirectory();
-  //   final String appDocPath = appDocDir.path;
-  //   final jar = PersistCookieJar(
-  //     ignoreExpires: true,
-  //     storage: FileStorage(appDocPath + "/.cookies/"),
-  //   );
-  //   var response = await jar.loadForRequest(
-  //     Uri.parse("https://api.englishmojabd.com/api/v1/auth/token"),
-  //   );
+  Future<dynamic> addBuildings(
+    String buildingName,
+    String buildingLocation,
+    int totalLocker,
+  ) async {
+    try {
+      final token = UserDetailsProvider().getToken();
 
-  //   // final String token = response..then((value) {
-  //   //       return value.data['data']['token'];
-  //   //     });;
-  //   return response;
-  // }
+      Response response = await dio.post(
+        '$baseUrl/addBuilding',
+        data: {
+          "name": buildingName,
+          "location": buildingLocation,
+          "totalLocker": totalLocker,
+          "id": 0,
+        },
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print(
+          'first here ' +
+              response.data.toString() +
+              'status code ' +
+              response.statusCode.toString(),
+        );
+        throw Exception("Failed to load buildings");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('first dio first ' + (e.response?.data).toString());
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        print('first dio second ' + e.toString());
+        Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
 }
