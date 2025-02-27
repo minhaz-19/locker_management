@@ -1,15 +1,15 @@
-import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/models/all_buildings.dart';
 import 'package:locker_management/models/getLockers.dart';
+import 'package:locker_management/models/user.dart';
 import 'package:locker_management/provider/userDetailsProvider.dart';
 
 final dio = Dio();
 
 class ApiResponse {
-  final String baseUrl = "http://10.29.171.185:8080";
+  final String baseUrl = "http://10.29.165.255:8080";
 
   // Provide phone number and ruquest for otp
   Future<Response> signUp(
@@ -69,6 +69,40 @@ class ApiResponse {
       }
     }
   }
+
+// get user details
+Future<UserModel> getUserDetails() async {
+  try {
+    final token = UserDetailsProvider().getToken();
+
+    final response = await dio.get(
+      '$baseUrl/user',
+      options: Options(
+        headers: {
+          "Authorization": "Bearer $token", // Send JWT Token
+          "Content-Type": "application/json",
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(response.data); // Parse JSON into UserModel
+    } else {
+      throw Exception("Failed to fetch user details");
+    }
+  } catch (e) {
+    if (e is DioException) {
+      // Show error message
+      Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+      throw Exception("API Error: ${e.response?.data}");
+    } else {
+      Fluttertoast.showToast(msg: "Error: $e");
+      throw Exception(e);
+    }
+  }
+}
+
+
 
   Future<List<Buildings>> fetchBuildings() async {
     try {
@@ -308,7 +342,7 @@ class ApiResponse {
 
   // update locker status
   Future<dynamic> updateLockerStatus(int id, String status) async {
-    try {                                                                                                                                                                               
+    try {
       final token = UserDetailsProvider().getToken();
 
       Response response = await dio.post(

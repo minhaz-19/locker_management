@@ -339,7 +339,7 @@ class _AddTabState extends State<AddTab> {
                             child: ListTile(
                               title: Text(buildings[index].name),
                               subtitle: Text(
-                                "Lockers: ${buildings[index].totalLocker}",
+                                "Location: ${buildings[index].location}",
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -349,11 +349,11 @@ class _AddTabState extends State<AddTab> {
                                     onPressed:
                                         () => _showAddLockerDialog(index),
                                   ),
-                                  IconButton(
-                                    icon: Icon(Icons.delete, color: Colors.red),
-                                    onPressed:
-                                        () => _showDeleteLockerDialog(index),
-                                  ),
+                                  // IconButton(
+                                  //   icon: Icon(Icons.delete, color: Colors.red),
+                                  //   onPressed:
+                                  //       () => _showDeleteLockerDialog(index),
+                                  // ),
                                 ],
                               ),
                             ),

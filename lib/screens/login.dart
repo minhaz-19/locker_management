@@ -11,6 +11,7 @@ import 'package:locker_management/component/wide_button.dart';
 import 'package:locker_management/provider/userDetailsProvider.dart';
 import 'package:locker_management/screens/home.dart';
 import 'package:locker_management/screens/signup.dart';
+import 'package:locker_management/screens/user_home.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Login extends StatefulWidget {
@@ -47,7 +48,7 @@ class _LoginState extends State<Login> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Home()),
+          MaterialPageRoute(builder: (context) => const UserHome()),
         );
       }
     } catch (e) {
