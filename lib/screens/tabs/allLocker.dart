@@ -238,7 +238,7 @@ class _AllLockerState extends State<AllLocker> {
                                 ],
                               ),
                               trailing:
-                                  locker.status != "Reserved"
+                                  locker.status != "RESERVED"
                                       ? ElevatedButton(
                                         onPressed:
                                             () =>

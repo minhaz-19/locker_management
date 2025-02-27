@@ -373,7 +373,7 @@ class ApiResponse {
           "startDate": startDate,
           "endDate": endDate,
           "lockerID": lockerId,
-          "status": "Requested",
+          "status": "REQUESTED",
         },
         options: Options(
           headers: {

@@ -38,7 +38,7 @@ class _SignUpState extends State<SignUp> {
     final phone = _mobileController.text.trim();
     final password = _passwordController.text.trim();
     final roles = _selectedRole;
-    final status = 'active';
+    final status = 'ACTIVE';
     final firebaseToken = await getDataFromDevice('token') ?? "aaaaa";
 
     try {

@@ -87,16 +87,38 @@ class _MyLockerState extends State<MyLocker> {
                     itemCount: lockerRequests.length,
                     itemBuilder: (context, index) {
                       final locker = lockerRequests[index];
+                      // convert the date to a more readable format, currently in milliseconds
+                      // only show the date not the time
+                      final startDate =
+                          DateTime.fromMillisecondsSinceEpoch(
+                            locker.startDate,
+                          ).toLocal().toIso8601String().split('T').first;
+                      final endDate =
+                          DateTime.fromMillisecondsSinceEpoch(
+                            locker.endDate,
+                          ).toLocal().toIso8601String().split('T').first;
                       return Card(
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
                           title: Text('Locker ID: ${locker.lockerID}'),
-                          subtitle: Text('Status: ${locker.status}'),
-                          trailing: ElevatedButton(
-                            onPressed:
-                                () => _showReleaseDialog(locker.lockerID),
-                            child: const Text("Release"),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Status: ${locker.status}'),
+
+                              Text('Start Date: $startDate'),
+                              Text('End Date: $endDate'),
+                            ],
                           ),
+                          trailing:
+                              locker.status != "RESERVED"
+                                  ? null
+                                  : ElevatedButton(
+                                    onPressed:
+                                        () =>
+                                            _showReleaseDialog(locker.lockerID),
+                                    child: const Text("Release"),
+                                  ),
                         ),
                       );
                     },
