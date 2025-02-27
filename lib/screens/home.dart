@@ -2,6 +2,7 @@ import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
 import 'package:flutter/material.dart';
 import 'package:locker_management/screens/tabs/add.dart';
+import 'package:locker_management/screens/tabs/lockerStatus.dart';
 import 'package:locker_management/screens/tabs/profileTab.dart';
 import 'package:locker_management/screens/tabs/statusTab.dart';
 import 'package:locker_management/screens/tabs/usersTab.dart';
@@ -16,7 +17,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<TabItem> items = [
     TabItem(icon: Icons.add, title: 'Add'),
-    TabItem(icon: Icons.auto_awesome_motion, title: 'Status'),
+    TabItem(icon: Icons.auto_awesome_motion, title: 'Lockers'),
+    TabItem(icon: Icons.check_box, title: 'Status'),
     TabItem(icon: Icons.account_circle, title: 'Users'),
     TabItem(icon: Icons.account_circle_outlined, title: 'Profile'),
   ];
@@ -33,8 +35,6 @@ class _HomeState extends State<Home> {
     super.initState();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +45,8 @@ class _HomeState extends State<Home> {
               : visit == 1
               ? StatusTab()
               : visit == 2
+              ? LockerStatus()
+              : visit == 3
               ? UsersTab()
               : ProfileTab(),
           Positioned(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/allUsers.dart';
@@ -37,6 +38,24 @@ class _UsersTabState extends State<UsersTab> {
     }
   }
 
+  dynamic updateUserStatus(int id, String status) async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      await ApiResponse().updateUserStatus(id, status);
+      await getUsers();
+      Fluttertoast.showToast(msg: "User status updated successfully");
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   void _showStatusChangeDialog(User user) {
     showDialog(
       context: context,
@@ -54,29 +73,17 @@ class _UsersTabState extends State<UsersTab> {
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
+                String status =
+                    (user.status == "ACTIVE") ? "BLOCKED" : "ACTIVE";
+                await updateUserStatus(user.id, status);
                 Navigator.of(context).pop(); // Close the dialog
-                changeUserStatus(user);
               },
               child: const Text("Confirm"),
             ),
           ],
         );
       },
-    );
-  }
-
-  void changeUserStatus(User user) {
-    // TODO: Implement the API call to change user status
-    setState(() {
-      // user.status = (user.status == "Active") ? "Inactive" : "Active";
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("User ${user.name} status changed to ${user.status}"),
-        duration: const Duration(seconds: 2),
-      ),
     );
   }
 

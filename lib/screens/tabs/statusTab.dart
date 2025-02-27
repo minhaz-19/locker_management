@@ -153,10 +153,7 @@ class _StatusTabState extends State<StatusTab> {
         : Scaffold(
           backgroundColor: Colors.grey[100],
           appBar: AppBar(
-            title: const Text(
-              "Locker Status",
-              style: TextStyle(color: Colors.white),
-            ),
+            title: const Text("Lockers", style: TextStyle(color: Colors.white)),
             backgroundColor: Theme.of(context).primaryColor,
             centerTitle: true,
           ),

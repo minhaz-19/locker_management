@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/models/allUsers.dart';
 import 'package:locker_management/models/all_buildings.dart';
 import 'package:locker_management/models/getLockers.dart';
+import 'package:locker_management/models/lockerStatus.dart';
 import 'package:locker_management/models/myLocker.dart';
 import 'package:locker_management/models/user.dart';
 import 'package:locker_management/provider/userDetailsProvider.dart';
@@ -538,7 +539,6 @@ class ApiResponse {
     }
   }
 
-
   // all users
   Future<dynamic> allUsers() async {
     try {
@@ -555,9 +555,8 @@ class ApiResponse {
       );
 
       if (response.statusCode == 200) {
-        List<User> users = (response.data as List)
-            .map((item) => User.fromJson(item))
-            .toList();
+        List<User> users =
+            (response.data as List).map((item) => User.fromJson(item)).toList();
         return users;
       } else {
         throw Exception("Failed to load lockers");
@@ -571,6 +570,108 @@ class ApiResponse {
       } else {
         print("not here you " + e.toString());
         Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+  // update user status
+  Future<dynamic> updateUserStatus(int id, String status) async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.post(
+        '$baseUrl/updateUserStatus',
+        data: {"id": id, "status": status},
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+  // locker status
+  Future<dynamic> lockerStatus() async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.get(
+        '$baseUrl/reservations',
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        List<LockerStatusModel> lockerStatuses = LockerStatusModel.fromJsonList(
+          response.data,
+        );
+        return lockerStatuses;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print("here " + e.toString());
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        Fluttertoast.showToast(msg: "Error go: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+  // release locker
+  Future<dynamic> releaseLocker(int id) async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.post(
+        '$baseUrl/releaseLocker/$id',
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print("here " + e.toString());
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        Fluttertoast.showToast(msg: "Error go: $e");
         throw Exception(e);
       }
     }

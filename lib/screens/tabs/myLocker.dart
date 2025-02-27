@@ -111,7 +111,7 @@ class _MyLockerState extends State<MyLocker> {
                             ],
                           ),
                           trailing:
-                              locker.status != "RESERVED"
+                              locker.status != "APPROVED"
                                   ? null
                                   : ElevatedButton(
                                     onPressed:
