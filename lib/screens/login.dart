@@ -48,10 +48,17 @@ class _LoginState extends State<Login> {
         UserDetailsProvider().updateId(response.data['userId']);
         UserDetailsProvider().updateRole(response.data['roles']);
         await ApiResponse().updateToken(UserDetailsProvider.firebaseToken);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const UserHome()),
-        );
+        if (response.data['roles'] == "ADMIN") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Home()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const UserHome()),
+          );
+        }
       }
     } catch (e) {
       setState(() {

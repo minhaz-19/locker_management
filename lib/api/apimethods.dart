@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:locker_management/models/allUsers.dart';
 import 'package:locker_management/models/all_buildings.dart';
 import 'package:locker_management/models/getLockers.dart';
 import 'package:locker_management/models/myLocker.dart';
@@ -531,6 +532,44 @@ class ApiResponse {
 
         throw Exception("API Error: ${e.response?.data}");
       } else {
+        Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+
+  // all users
+  Future<dynamic> allUsers() async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.get(
+        '$baseUrl/allUsers',
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        List<User> users = (response.data as List)
+            .map((item) => User.fromJson(item))
+            .toList();
+        return users;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print("here " + e.toString());
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        print("not here you " + e.toString());
         Fluttertoast.showToast(msg: "Error: $e");
         throw Exception(e);
       }
