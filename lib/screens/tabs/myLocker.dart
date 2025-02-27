@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:locker_management/api/apimethods.dart';
+import 'package:locker_management/component/progressbar.dart';
+import 'package:locker_management/models/myLocker.dart';
 
 class MyLocker extends StatefulWidget {
   const MyLocker({super.key});
@@ -8,12 +12,95 @@ class MyLocker extends StatefulWidget {
 }
 
 class _MyLockerState extends State<MyLocker> {
+  bool _isLoading = false;
+  List<LockerRequest> lockerRequests = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLockers();
+  }
+
+  void _fetchLockers() async {
+    setState(() {
+      _isLoading = true;
+    });
+    // Simulated API response
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      lockerRequests = await ApiResponse().myLocker();
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _showReleaseDialog(int lockerID) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Release Locker"),
+          content: Text("Are you sure you want to release locker #$lockerID?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Implement release logic here
+              },
+              child: const Text("Release"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text('My Locker'),
-      ),
-    );
+    return _isLoading
+        ? const ProgressBar()
+        : Scaffold(
+          backgroundColor: Colors.grey[100],
+          appBar: AppBar(
+            title: const Text(
+              "My Lockers",
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Theme.of(context).primaryColor,
+            centerTitle: true,
+          ),
+          body:
+              lockerRequests.isEmpty
+                  ? const Center(child: Text('No Lockers Available'))
+                  : ListView.builder(
+                    itemCount: lockerRequests.length,
+                    itemBuilder: (context, index) {
+                      final locker = lockerRequests[index];
+                      return Card(
+                        margin: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text('Locker ID: ${locker.lockerID}'),
+                          subtitle: Text('Status: ${locker.status}'),
+                          trailing: ElevatedButton(
+                            onPressed:
+                                () => _showReleaseDialog(locker.lockerID),
+                            child: const Text("Release"),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+        );
   }
 }

@@ -16,6 +16,9 @@ class _AllLockerState extends State<AllLocker> {
   bool _isLoading = false;
   int? selectedBuildingId;
   List<Buildings> buildings = [];
+  List<GetAllLockers> lockers = [];
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   @override
   void initState() {
@@ -25,16 +28,28 @@ class _AllLockerState extends State<AllLocker> {
   }
 
   dynamic allBuildings() async {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
     try {
       buildings = await ApiResponse().fetchBuildings();
-      // sort buildings by id
       buildings.sort((a, b) => a.id.compareTo(b.id));
+    } catch (e) {
+      // Handle error
+    }
+    setState(() => _isLoading = false);
+  }
+
+  dynamic reserveLocker(int startDate, int endDate, int lockerId) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await ApiResponse().reserveLocker(startDate, endDate, lockerId);
       setState(() {
         _isLoading = false;
       });
+      Fluttertoast.showToast(
+        msg: "Locker reservation request sent successfully.",
+      );
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -43,86 +58,115 @@ class _AllLockerState extends State<AllLocker> {
   }
 
   dynamic getLockers() async {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
     try {
       lockers = await ApiResponse().fetchLockers();
-      // sort lockers by id
       lockers.sort((a, b) => a.id.compareTo(b.id));
-      setState(() {
-        _isLoading = false;
-      });
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      // Handle error
     }
+    setState(() => _isLoading = false);
   }
-
-  // declare lockers
-  dynamic deleteLocker(int lockerId) async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      await ApiResponse().deleteLocker(lockerId);
-      setState(() {
-        _isLoading = false;
-      });
-      Fluttertoast.showToast(msg: "Locker deleted successfully!");
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  // declare lockers
-  List<GetAllLockers> lockers = [];
 
   void _updateLockerStatus(int lockerId) {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("Select Start Date and End Date"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: "Start Date",
-                  hintText: "YYYY-MM-DD",
-                ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text("Select Start Date and End Date"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: TextEditingController(
+                      text:
+                          _startDate != null
+                              ? "${_startDate!.year}-${_startDate!.month}-${_startDate!.day}"
+                              : "",
+                    ),
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      labelText: "Start Date",
+                      hintText: "YYYY-MM-DD",
+                    ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          _startDate = pickedDate;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: TextEditingController(
+                      text:
+                          _endDate != null
+                              ? "${_endDate!.year}-${_endDate!.month}-${_endDate!.day}"
+                              : "",
+                    ),
+                    readOnly: true,
+                    decoration: const InputDecoration(
+                      labelText: "End Date",
+                      hintText: "YYYY-MM-DD",
+                    ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (pickedDate != null) {
+                        setState(() {
+                          _endDate = pickedDate;
+                        });
+                      }
+                    },
+                  ),
+                ],
               ),
-              TextField(
-                decoration: const InputDecoration(
-                  labelText: "End Date",
-                  hintText: "YYYY-MM-DD",
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
                 ),
-              ),
-            ],
-          ),
-
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Reserve"),
-            ),
-          ],
+                TextButton(
+                  onPressed: () async {
+                    if (_startDate != null && _endDate != null) {
+                      int startMilliseconds =
+                          _startDate!.millisecondsSinceEpoch;
+                      int endMilliseconds = _endDate!.millisecondsSinceEpoch;
+                      print("Start Date in ms: $startMilliseconds");
+                      print("End Date in ms: $endMilliseconds");
+                      // Add your logic to reserve the locker here
+                      await reserveLocker(
+                        startMilliseconds,
+                        endMilliseconds,
+                        lockerId,
+                      );
+                    } else {
+                      Fluttertoast.showToast(
+                        msg: "Please select both start and end dates.",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                      );
+                    }
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Reserve"),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -130,7 +174,7 @@ class _AllLockerState extends State<AllLocker> {
 
   @override
   Widget build(BuildContext context) {
-    return (_isLoading == true)
+    return _isLoading
         ? const ProgressBar()
         : Scaffold(
           backgroundColor: Colors.grey[100],
@@ -151,19 +195,15 @@ class _AllLockerState extends State<AllLocker> {
                   value: selectedBuildingId,
                   hint: const Text("Select Building"),
                   onChanged: (int? newValue) {
-                    setState(() {
-                      selectedBuildingId = newValue;
-                    });
+                    setState(() => selectedBuildingId = newValue);
                   },
                   items:
-                      buildings
-                          .map(
-                            (building) => DropdownMenuItem<int>(
-                              value: building.id,
-                              child: Text(building.name),
-                            ),
-                          )
-                          .toList(),
+                      buildings.map((building) {
+                        return DropdownMenuItem<int>(
+                          value: building.id,
+                          child: Text(building.name),
+                        );
+                      }).toList(),
                 ),
                 const SizedBox(height: 20),
                 Expanded(
@@ -174,7 +214,6 @@ class _AllLockerState extends State<AllLocker> {
                               (locker) =>
                                   locker.buildingId == selectedBuildingId,
                             )
-                            .toList()
                             .length,
                     itemBuilder: (context, index) {
                       var filteredLockers =
@@ -185,7 +224,6 @@ class _AllLockerState extends State<AllLocker> {
                               )
                               .toList();
                       var locker = filteredLockers[index];
-
                       return Column(
                         children: [
                           Card(
@@ -201,37 +239,17 @@ class _AllLockerState extends State<AllLocker> {
                               ),
                               trailing:
                                   locker.status != "Reserved"
-                                      ? SizedBox(
-                                        width:
-                                            100, // Set a fixed width to prevent overflow
-                                        child: Column(
-                                          mainAxisSize:
-                                              MainAxisSize
-                                                  .min, // Take only required space
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment
-                                                  .end, // Align buttons to the right
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed:
-                                                  () => _updateLockerStatus(
-                                                    locker.id,
-                                                  ),
-                                              child: const Text("Reserve"),
-                                            ),
-                                            const SizedBox(
-                                              height: 8,
-                                            ), // Space between buttons
-                                          ],
-                                        ),
+                                      ? ElevatedButton(
+                                        onPressed:
+                                            () =>
+                                                _updateLockerStatus(locker.id),
+                                        child: const Text("Reserve"),
                                       )
                                       : null,
                             ),
                           ),
-                          // Show SizedBox only if it's the last item
-                          index == filteredLockers.length - 1
-                              ? const SizedBox(height: 70)
-                              : Container(),
+                          if (filteredLockers.length == index + 1)
+                            const SizedBox(height: 70),
                         ],
                       );
                     },
