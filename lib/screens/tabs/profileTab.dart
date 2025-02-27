@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/component/shared_preference.dart';
@@ -31,6 +32,42 @@ class _ProfileTabState extends State<ProfileTab> {
           ? UserDetailsProvider.userRole
           : "Your Status";
 
+  dynamic changeName(String newName) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await ApiResponse().updateName(newName);
+      UserDetailsProvider.userName = newName;
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(msg: "Name updated successfully");
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  dynamic changePhone(String newPhone) async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await ApiResponse().updatePhone(newPhone);
+      UserDetailsProvider.userMobile = newPhone;
+      setState(() {
+        isLoading = false;
+      });
+      Fluttertoast.showToast(msg: "Phone number updated successfully");
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   void _showEditDialog(
     String field,
     String currentValue,
@@ -57,9 +94,17 @@ class _ProfileTabState extends State<ProfileTab> {
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () {
-                onSave(controller.text);
-                Navigator.pop(context);
+              onPressed: () async {
+                if (field == "Name") {
+                  await changeName(controller.text);
+                  UserDetailsProvider.userName = controller.text;
+                  Navigator.pop(context);
+                }
+                if (field == "Phone No") {
+                  await changePhone(controller.text);
+                  UserDetailsProvider.userMobile = controller.text;
+                  Navigator.pop(context);
+                }
               },
               child: const Text("Save"),
             ),
@@ -76,10 +121,13 @@ class _ProfileTabState extends State<ProfileTab> {
       child: ListTile(
         title: Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(value),
-        trailing: IconButton(
-          icon: Icon(Icons.edit, color: Colors.purple),
-          onPressed: onEdit,
-        ),
+        trailing:
+            (label != 'Email' && label != 'Status')
+                ? IconButton(
+                  icon: Icon(Icons.edit, color: Colors.purple),
+                  onPressed: onEdit,
+                )
+                : null,
       ),
     );
   }

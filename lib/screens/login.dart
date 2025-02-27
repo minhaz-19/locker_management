@@ -43,9 +43,11 @@ class _LoginState extends State<Login> {
       if (response.statusCode == 200) {
         await saveDataToDevice('email', email);
         await saveDataToDevice('password', password);
-        await saveDataToDevice('token', response.data['second']);
-        UserDetailsProvider().updateToken(response.data['second']);
-
+        await saveDataToDevice('token', response.data['token']);
+        UserDetailsProvider().updateToken(response.data['token']);
+        UserDetailsProvider().updateId(response.data['userId']);
+        UserDetailsProvider().updateRole(response.data['roles']);
+        await ApiResponse().updateToken(UserDetailsProvider.firebaseToken);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const UserHome()),
@@ -58,10 +60,19 @@ class _LoginState extends State<Login> {
     }
   }
 
+  Future<void> getFirebaseToken() async {
+    String? token = await FirebaseMessaging.instance.getToken();
+    if (token != null) {
+      await saveDataToDevice('firebaseToken', token);
+      UserDetailsProvider().updateFirebaseToken(token);
+    }
+  }
+
   void initializeLogin() async {
     setState(() {
       _isLoading = true;
     });
+    await getFirebaseToken();
     final email = await getDataFromDevice('email') ?? "";
     final password = await getDataFromDevice('password') ?? "";
     if (email.isNotEmpty && password.isNotEmpty) {

@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/models/all_buildings.dart';
 import 'package:locker_management/models/getLockers.dart';
@@ -56,11 +55,12 @@ class ApiResponse {
         '$baseUrl/signin',
         data: {"email": email, "password": password},
       );
-
+      print('working#######################');
       return response;
     } catch (e) {
       if (e is DioException) {
         // Show error message
+        print('Here###################################');
         Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
 
         throw Exception("API Error: ${e.response?.data}");
@@ -364,7 +364,6 @@ class ApiResponse {
   ) async {
     try {
       final token = UserDetailsProvider().getToken();
-      Fluttertoast.showToast(msg: "id: $lockerId");
       Response response = await dio.post(
         '$baseUrl/reserveLocker',
         data: {
@@ -432,6 +431,106 @@ class ApiResponse {
         throw Exception("API Error: ${e.response?.data}");
       } else {
         print("not here you " + e.toString());
+        Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+  // update name
+  Future<dynamic> updateName(String name) async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.post(
+        '$baseUrl/updateName',
+        data: {"name": name},
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+  // update phone
+  Future<dynamic> updatePhone(String phone) async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.post(
+        '$baseUrl/updatePhone',
+        data: {"phone": phone},
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+  // update token
+  Future<dynamic> updateToken(String firebaseToken) async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.post(
+        '$baseUrl/updateFirebaseToken',
+        data: {"firebaseToken": token},
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('are you here ' + e.toString());
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
         Fluttertoast.showToast(msg: "Error: $e");
         throw Exception(e);
       }

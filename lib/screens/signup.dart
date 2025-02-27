@@ -24,13 +24,7 @@ class _SignUpState extends State<SignUp> {
 
   bool _isLoading = false;
 
-  Future<void> getToken() async {
-    String? token = await FirebaseMessaging.instance.getToken();
-    if (token != null) {
-      await saveDataToDevice('token', token);
-      UserDetailsProvider().updateToken(token);
-    }
-  }
+
 
   Future<bool> signUp() async {
     final name = _nameController.text.trim();

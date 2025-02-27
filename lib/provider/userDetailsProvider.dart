@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 class UserDetailsProvider with ChangeNotifier {
   static String userName = '';
   static String userEmail = '';
-  static String userId = '';
+  static int userId = 0;
   static String userRole = '';
   static String userMobile = '';
   static String userToken = '';
   static String userStatus = '';
+  static String firebaseToken = '';
   void updateName(String name) {
     userName = name;
+    notifyListeners();
+  }
+
+  void updateFirebaseToken(String token) {
+    firebaseToken = token;
     notifyListeners();
   }
 
@@ -23,7 +29,7 @@ class UserDetailsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateId(String id) {
+  void updateId(int id) {
     userId = id;
     notifyListeners();
   }
@@ -54,12 +60,16 @@ class UserDetailsProvider with ChangeNotifier {
     return userMobile;
   }
 
-  String getId() {
+  int getId() {
     return userId;
   }
 
   String getRole() {
     return userRole;
+  }
+
+  String getFirebaseToken() {
+    return firebaseToken;
   }
 
   void updateToken(String token) {
