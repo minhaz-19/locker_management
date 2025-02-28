@@ -117,7 +117,10 @@ class _LockerStatusState extends State<LockerStatus>
                         ),
                       ],
                     )
-                    : null,
+                    : IconButton(
+                      icon: const Icon(Icons.close, color: Colors.red),
+                      onPressed: () => _showRejectDialog(item),
+                    ),
           ),
         );
       },
@@ -178,6 +181,10 @@ class _LockerStatusState extends State<LockerStatus>
   }
 
   Future<void> _approveLocker(LockerStatusModel item) async {
+    await ApiResponse().updateReservationStatus(item.id, "APPROVED");
+    await getLockerStatus();
+    Fluttertoast.showToast(msg: "Locker request approved successfully");
+
     setState(() {
       lockerStatuses =
           lockerStatuses.map((status) {
@@ -198,7 +205,7 @@ class _LockerStatusState extends State<LockerStatus>
 
   Future<void> _rejectLocker(LockerStatusModel item) async {
     try {
-      await ApiResponse().releaseLocker(item.lockerID);
+      await ApiResponse().updateReservationStatus(item.id, "REJECTED");
       await getLockerStatus();
       Fluttertoast.showToast(msg: "Locker request rejected successfully");
       setState(() {

@@ -4,6 +4,8 @@ import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/myLocker.dart';
 
+final GlobalKey<_MyLockerState> myLockerKey = GlobalKey<_MyLockerState>();
+
 class MyLocker extends StatefulWidget {
   const MyLocker({super.key});
 
@@ -21,26 +23,52 @@ class _MyLockerState extends State<MyLocker> {
     _fetchLockers();
   }
 
-  void _fetchLockers() async {
+  /// Fetch the locker list from API
+  Future<void> _fetchLockers() async {
     setState(() {
       _isLoading = true;
     });
-    // Simulated API response
     try {
-      setState(() {
-        _isLoading = true;
-      });
       lockerRequests = await ApiResponse().myLocker();
-      setState(() {
-        _isLoading = false;
-      });
     } catch (e) {
+      Fluttertoast.showToast(msg: "Error loading lockers: $e");
+    } finally {
       setState(() {
         _isLoading = false;
       });
     }
   }
 
+  /// Reset the UI completely (force full rebuild)
+  void resetState() {
+    setState(() {
+      lockerRequests = [];
+    });
+    _fetchLockers();
+  }
+
+  /// Release locker and reset UI
+  Future<void> releaseLocker(int lockerID) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await ApiResponse().releaseLocker(lockerID);
+      Fluttertoast.showToast(msg: "Locker released successfully");
+
+      // **Reset the full UI using GlobalKey**
+      myLockerKey.currentState?.resetState();
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error releasing locker: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  /// Show confirmation dialog before releasing the locker
   void _showReleaseDialog(int lockerID) {
     showDialog(
       context: context,
@@ -54,9 +82,9 @@ class _MyLockerState extends State<MyLocker> {
               child: const Text("Cancel"),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                // Implement release logic here
+                await releaseLocker(lockerID);
               },
               child: const Text("Release"),
             ),
@@ -87,8 +115,8 @@ class _MyLockerState extends State<MyLocker> {
                     itemCount: lockerRequests.length,
                     itemBuilder: (context, index) {
                       final locker = lockerRequests[index];
-                      // convert the date to a more readable format, currently in milliseconds
-                      // only show the date not the time
+
+                      // Convert the date to a readable format
                       final startDate =
                           DateTime.fromMillisecondsSinceEpoch(
                             locker.startDate,
@@ -97,6 +125,7 @@ class _MyLockerState extends State<MyLocker> {
                           DateTime.fromMillisecondsSinceEpoch(
                             locker.endDate,
                           ).toLocal().toIso8601String().split('T').first;
+
                       return Card(
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
@@ -105,7 +134,6 @@ class _MyLockerState extends State<MyLocker> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('Status: ${locker.status}'),
-
                               Text('Start Date: $startDate'),
                               Text('End Date: $endDate'),
                             ],

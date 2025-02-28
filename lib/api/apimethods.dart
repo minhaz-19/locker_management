@@ -11,7 +11,7 @@ import 'package:locker_management/provider/userDetailsProvider.dart';
 final dio = Dio();
 
 class ApiResponse {
-  final String baseUrl = "http://10.29.165.255:8080";
+  final String baseUrl = "http://10.29.164.147:8080";
 
   // Provide phone number and ruquest for otp
   Future<Response> signUp(
@@ -352,6 +352,41 @@ class ApiResponse {
 
         throw Exception("API Error: ${e.response?.data}");
       } else {
+        Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+  // update reservation status
+  Future<dynamic> updateReservationStatus(int id, String status) async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.post(
+        '$baseUrl/updateReservation',
+        data: {"id": id, "status": status},
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('here ' + e.toString());
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        print('not here ' + e.toString());
         Fluttertoast.showToast(msg: "Error: $e");
         throw Exception(e);
       }

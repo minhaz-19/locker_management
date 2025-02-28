@@ -24,8 +24,6 @@ class _SignUpState extends State<SignUp> {
 
   bool _isLoading = false;
 
-
-
   Future<bool> signUp() async {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
@@ -45,7 +43,7 @@ class _SignUpState extends State<SignUp> {
         status,
         firebaseToken,
       );
-      Fluttertoast.showToast(msg: response.statusCode.toString());
+      // Fluttertoast.showToast(msg: response.statusCode.toString());
       if (response.statusCode == 201) {
         return true;
       } else {
