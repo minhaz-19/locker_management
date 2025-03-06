@@ -4,8 +4,6 @@ import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/myLocker.dart';
 
-final GlobalKey<_MyLockerState> myLockerKey = GlobalKey<_MyLockerState>();
-
 class MyLocker extends StatefulWidget {
   const MyLocker({super.key});
 
@@ -23,44 +21,33 @@ class _MyLockerState extends State<MyLocker> {
     _fetchLockers();
   }
 
-  /// Fetch the locker list from API
-  Future<void> _fetchLockers() async {
+  dynamic _fetchLockers() async {
     setState(() {
       _isLoading = true;
+      lockerRequests = [];
     });
     try {
       lockerRequests = await ApiResponse().myLocker();
+      setState(() {
+        _isLoading = false;
+      });
     } catch (e) {
-      Fluttertoast.showToast(msg: "Error loading lockers: $e");
-    } finally {
       setState(() {
         _isLoading = false;
       });
     }
   }
 
-  /// Reset the UI completely (force full rebuild)
-  void resetState() {
-    setState(() {
-      lockerRequests = [];
-    });
-    _fetchLockers();
-  }
-
-  /// Release locker and reset UI
-  Future<void> releaseLocker(int lockerID) async {
+  dynamic releaseLocker(int lockerID) async {
     setState(() {
       _isLoading = true;
     });
-
     try {
       await ApiResponse().releaseLocker(lockerID);
+      await _fetchLockers();
       Fluttertoast.showToast(msg: "Locker released successfully");
-
-      // **Reset the full UI using GlobalKey**
-      myLockerKey.currentState?.resetState();
     } catch (e) {
-      Fluttertoast.showToast(msg: "Error releasing locker: $e");
+      Fluttertoast.showToast(msg: "Failed to release locker");
     } finally {
       setState(() {
         _isLoading = false;
@@ -68,7 +55,6 @@ class _MyLockerState extends State<MyLocker> {
     }
   }
 
-  /// Show confirmation dialog before releasing the locker
   void _showReleaseDialog(int lockerID) {
     showDialog(
       context: context,
@@ -83,8 +69,8 @@ class _MyLockerState extends State<MyLocker> {
             ),
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop();
                 await releaseLocker(lockerID);
+                Navigator.of(context).pop();
               },
               child: const Text("Release"),
             ),
@@ -112,11 +98,15 @@ class _MyLockerState extends State<MyLocker> {
               lockerRequests.isEmpty
                   ? const Center(child: Text('No Lockers Available'))
                   : ListView.builder(
-                    itemCount: lockerRequests.length,
+                    itemCount:
+                        lockerRequests.length + 1, // Add 1 for the SizedBox
                     itemBuilder: (context, index) {
+                      if (index == lockerRequests.length) {
+                        return const SizedBox(
+                          height: 80,
+                        ); // Adds spacing after the last item
+                      }
                       final locker = lockerRequests[index];
-
-                      // Convert the date to a readable format
                       final startDate =
                           DateTime.fromMillisecondsSinceEpoch(
                             locker.startDate,
@@ -125,7 +115,6 @@ class _MyLockerState extends State<MyLocker> {
                           DateTime.fromMillisecondsSinceEpoch(
                             locker.endDate,
                           ).toLocal().toIso8601String().split('T').first;
-
                       return Card(
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(

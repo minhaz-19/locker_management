@@ -44,6 +44,7 @@ class _AllLockerState extends State<AllLocker> {
         _isLoading = true;
       });
       await ApiResponse().reserveLocker(startDate, endDate, lockerId);
+      await getLockers();
       setState(() {
         _isLoading = false;
       });
@@ -58,6 +59,9 @@ class _AllLockerState extends State<AllLocker> {
   }
 
   dynamic getLockers() async {
+    setState(() {
+      lockers = [];
+    });
     setState(() => _isLoading = true);
     try {
       lockers = await ApiResponse().fetchLockers();
