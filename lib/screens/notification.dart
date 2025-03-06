@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
+import 'package:locker_management/models/notificationModel.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -14,7 +15,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   bool isLoading = false;
 
   // Sample notification data
-  List<Map<String, dynamic>> notifications = [];
+  List<NotificationModel> notifications = [];
 
   @override
   void initState() {
@@ -29,7 +30,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
       notifications = [];
     });
     try {
+      print("@@@@@start");
       notifications = await ApiResponse().notification();
+      print("@@@@@@@@done");
       setState(() {
         isLoading = false;
       });
@@ -70,11 +73,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         child: ListTile(
-                          title: Text(notification['message']),
+                          title: Text(notification.message),
                           subtitle: Text(
                             DateFormat('MMM dd, yyyy - hh:mm a').format(
                               DateTime.fromMillisecondsSinceEpoch(
-                                notification['timestamp'],
+                                notification.timestamp,
                               ).toLocal(),
                             ),
                             style: TextStyle(color: Colors.grey.shade600),

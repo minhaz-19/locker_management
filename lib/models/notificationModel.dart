@@ -11,6 +11,9 @@ class NotificationModel {
     required this.userId,
   });
 
+  // Getter to convert the timestamp into a DateTime object
+  DateTime get dateTime => DateTime.fromMillisecondsSinceEpoch(timestamp);
+
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
       id: json['id'],

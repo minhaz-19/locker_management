@@ -729,9 +729,18 @@ class ApiResponse {
       );
 
       if (response.statusCode == 200) {
+        print('here ' + response.data.toString());
         List<NotificationModel> notifications = NotificationModel.fromJsonList(
           response.data,
         );
+
+        for (var notification in notifications) {
+          print("Notification ID: ${notification.id}");
+          print("Message: ${notification.message}");
+          print(
+            "Timestamp: ${notification.dateTime}",
+          ); // This will print the timestamp as a readable date
+        }
         return notifications;
       } else {
         throw Exception("Failed to load lockers");
