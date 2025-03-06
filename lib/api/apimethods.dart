@@ -5,6 +5,7 @@ import 'package:locker_management/models/all_buildings.dart';
 import 'package:locker_management/models/getLockers.dart';
 import 'package:locker_management/models/lockerStatus.dart';
 import 'package:locker_management/models/myLocker.dart';
+import 'package:locker_management/models/notificationModel.dart';
 import 'package:locker_management/models/user.dart';
 import 'package:locker_management/provider/userDetailsProvider.dart';
 
@@ -696,6 +697,42 @@ class ApiResponse {
 
       if (response.statusCode == 200) {
         return true;
+      } else {
+        throw Exception("Failed to load lockers");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print("here " + e.toString());
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        Fluttertoast.showToast(msg: "Error go: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
+  // notofication
+  Future<dynamic> notification() async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.get(
+        '$baseUrl/notification',
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        List<NotificationModel> notifications = NotificationModel.fromJsonList(
+          response.data,
+        );
+        return notifications;
       } else {
         throw Exception("Failed to load lockers");
       }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/all_buildings.dart';
+import 'package:locker_management/screens/notification.dart';
 
 class AddTab extends StatefulWidget {
   const AddTab({super.key});
@@ -297,6 +298,19 @@ class _AddTabState extends State<AddTab> {
             ),
             backgroundColor: Theme.of(context).primaryColor,
             centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
           body: Padding(
             padding: const EdgeInsets.all(20.0),

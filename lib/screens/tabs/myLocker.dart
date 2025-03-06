@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/myLocker.dart';
+import 'package:locker_management/screens/notification.dart';
 
 class MyLocker extends StatefulWidget {
   const MyLocker({super.key});
@@ -91,6 +92,22 @@ class _MyLockerState extends State<MyLocker> {
               "My Lockers",
               style: TextStyle(color: Colors.white),
             ),
+            // add a notification icon in the app bar
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.notifications, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+            
+
             backgroundColor: Theme.of(context).primaryColor,
             centerTitle: true,
           ),
