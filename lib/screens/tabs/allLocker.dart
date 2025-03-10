@@ -73,27 +73,31 @@ class _AllLockerState extends State<AllLocker> {
   }
 
   void _updateLockerStatus(int lockerId) {
+    DateTime? _startDateTime;
+    DateTime? _endDateTime;
+
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text("Select Start Date and End Date"),
+              title: const Text("Select Start DateTime and End DateTime"),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: TextEditingController(
                       text:
-                          _startDate != null
-                              ? "${_startDate!.year}-${_startDate!.month}-${_startDate!.day}"
+                          _startDateTime != null
+                              ? "${_startDateTime!.year}-${_startDateTime!.month.toString().padLeft(2, '0')}-${_startDateTime!.day.toString().padLeft(2, '0')} "
+                                  "${_startDateTime!.hour.toString().padLeft(2, '0')}:${_startDateTime!.minute.toString().padLeft(2, '0')}"
                               : "",
                     ),
                     readOnly: true,
                     decoration: const InputDecoration(
-                      labelText: "Start Date",
-                      hintText: "YYYY-MM-DD",
+                      labelText: "Start Date & Time",
+                      hintText: "YYYY-MM-DD HH:MM",
                     ),
                     onTap: () async {
                       DateTime? pickedDate = await showDatePicker(
@@ -103,9 +107,21 @@ class _AllLockerState extends State<AllLocker> {
                         lastDate: DateTime(2100),
                       );
                       if (pickedDate != null) {
-                        setState(() {
-                          _startDate = pickedDate;
-                        });
+                        TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (pickedTime != null) {
+                          setState(() {
+                            _startDateTime = DateTime(
+                              pickedDate.year,
+                              pickedDate.month,
+                              pickedDate.day,
+                              pickedTime.hour,
+                              pickedTime.minute,
+                            );
+                          });
+                        }
                       }
                     },
                   ),
@@ -113,14 +129,15 @@ class _AllLockerState extends State<AllLocker> {
                   TextField(
                     controller: TextEditingController(
                       text:
-                          _endDate != null
-                              ? "${_endDate!.year}-${_endDate!.month}-${_endDate!.day}"
+                          _endDateTime != null
+                              ? "${_endDateTime!.year}-${_endDateTime!.month.toString().padLeft(2, '0')}-${_endDateTime!.day.toString().padLeft(2, '0')} "
+                                  "${_endDateTime!.hour.toString().padLeft(2, '0')}:${_endDateTime!.minute.toString().padLeft(2, '0')}"
                               : "",
                     ),
                     readOnly: true,
                     decoration: const InputDecoration(
-                      labelText: "End Date",
-                      hintText: "YYYY-MM-DD",
+                      labelText: "End Date & Time",
+                      hintText: "YYYY-MM-DD HH:MM",
                     ),
                     onTap: () async {
                       DateTime? pickedDate = await showDatePicker(
@@ -130,9 +147,21 @@ class _AllLockerState extends State<AllLocker> {
                         lastDate: DateTime(2100),
                       );
                       if (pickedDate != null) {
-                        setState(() {
-                          _endDate = pickedDate;
-                        });
+                        TimeOfDay? pickedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (pickedTime != null) {
+                          setState(() {
+                            _endDateTime = DateTime(
+                              pickedDate.year,
+                              pickedDate.month,
+                              pickedDate.day,
+                              pickedTime.hour,
+                              pickedTime.minute,
+                            );
+                          });
+                        }
                       }
                     },
                   ),
@@ -145,13 +174,12 @@ class _AllLockerState extends State<AllLocker> {
                 ),
                 TextButton(
                   onPressed: () async {
-                    if (_startDate != null && _endDate != null) {
+                    if (_startDateTime != null && _endDateTime != null) {
                       int startMilliseconds =
-                          _startDate!.millisecondsSinceEpoch;
-                      int endMilliseconds = _endDate!.millisecondsSinceEpoch;
-                      print("Start Date in ms: $startMilliseconds");
-                      print("End Date in ms: $endMilliseconds");
-                      // Add your logic to reserve the locker here
+                          _startDateTime!.millisecondsSinceEpoch;
+                      int endMilliseconds =
+                          _endDateTime!.millisecondsSinceEpoch;
+                      // Call your reservation logic here
                       await reserveLocker(
                         startMilliseconds,
                         endMilliseconds,
@@ -159,7 +187,7 @@ class _AllLockerState extends State<AllLocker> {
                       );
                     } else {
                       Fluttertoast.showToast(
-                        msg: "Please select both start and end dates.",
+                        msg: "Please select both start and end date & time.",
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                       );
