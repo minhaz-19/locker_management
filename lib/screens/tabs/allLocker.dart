@@ -4,6 +4,7 @@ import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/all_buildings.dart';
 import 'package:locker_management/models/getLockers.dart';
+import 'package:locker_management/provider/userDetailsProvider.dart';
 
 class AllLocker extends StatefulWidget {
   const AllLocker({super.key});
@@ -180,11 +181,20 @@ class _AllLockerState extends State<AllLocker> {
                       int endMilliseconds =
                           _endDateTime!.millisecondsSinceEpoch;
                       // Call your reservation logic here
-                      await reserveLocker(
-                        startMilliseconds,
-                        endMilliseconds,
-                        lockerId,
-                      );
+                      // SHOW DIALOG IF THE DURATION IS GREATER THAN 12 HOURS
+                      if (endMilliseconds - startMilliseconds > 43200000 &&
+                          UserDetailsProvider().getRole() == "VISITOR") {
+                        Fluttertoast.showToast(
+                          msg:
+                              "Reservation duration cannot be more than 12 hours.",
+                        );
+                      } else {
+                        await reserveLocker(
+                          startMilliseconds,
+                          endMilliseconds,
+                          lockerId,
+                        );
+                      }
                     } else {
                       Fluttertoast.showToast(
                         msg: "Please select both start and end date & time.",
@@ -270,7 +280,14 @@ class _AllLockerState extends State<AllLocker> {
                                 ],
                               ),
                               trailing:
-                                  locker.status != "RESERVED"
+                                  locker.status != "RESERVED" &&
+                                          ((UserDetailsProvider().getRole() ==
+                                                      "STUDENT" &&
+                                                  locker.type == 'PERMANENT') ||
+                                              (UserDetailsProvider()
+                                                          .getRole() ==
+                                                      "VISITOR" &&
+                                                  locker.type == 'TEMPORARY'))
                                       ? ElevatedButton(
                                         onPressed:
                                             () =>

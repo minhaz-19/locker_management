@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/all_buildings.dart';
@@ -24,6 +25,7 @@ class _AddTabState extends State<AddTab> {
   dynamic getAllBuildings() async {
     setState(() {
       _isLoading = true;
+      buildings = [];
     });
     try {
       buildings = await ApiResponse().fetchBuildings();
@@ -42,8 +44,9 @@ class _AddTabState extends State<AddTab> {
       _isLoading = true;
     });
     try {
-      buildings = await ApiResponse().addBuildings(name, location, totalLocker);
+      await ApiResponse().addBuildings(name, location, totalLocker);
       await getAllBuildings();
+      Fluttertoast.showToast(msg: "College Added Successfully");
       setState(() {
         _isLoading = false;
       });
@@ -63,17 +66,17 @@ class _AddTabState extends State<AddTab> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Add Building"),
+          title: const Text("Add College"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: "Building Name"),
+                decoration: InputDecoration(labelText: "College Name"),
               ),
               TextField(
                 controller: locationController,
-                decoration: InputDecoration(labelText: "Location"),
+                decoration: InputDecoration(labelText: "Locker Room"),
               ),
               TextField(
                 controller: lockersController,
@@ -112,7 +115,7 @@ class _AddTabState extends State<AddTab> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Delete Building"),
+          title: const Text("Delete College"),
           content: SizedBox(
             width: double.maxFinite, // Ensures proper width
             child: SingleChildScrollView(
@@ -130,6 +133,9 @@ class _AddTabState extends State<AddTab> {
                             });
                             await ApiResponse().deleteBuildings(building.id);
                             await getAllBuildings();
+                            Fluttertoast.showToast(
+                              msg: "College Deleted Successfully",
+                            );
                             Navigator.pop(context);
                           },
                         ),
@@ -154,8 +160,8 @@ class _AddTabState extends State<AddTab> {
     TextEditingController buildingIdController = TextEditingController();
     TextEditingController locationController = TextEditingController();
 
-    String selectedStatus = "available";
-    String selectedType = "permanent";
+    String selectedStatus = "AVAILABLE";
+    String selectedType = "PERMANENT";
 
     showDialog(
       context: context,
@@ -169,7 +175,7 @@ class _AddTabState extends State<AddTab> {
                 // Location Input
                 TextField(
                   controller: locationController,
-                  decoration: const InputDecoration(labelText: "Location"),
+                  decoration: const InputDecoration(labelText: "Locker Room"),
                 ),
                 const SizedBox(height: 10),
 
@@ -177,7 +183,7 @@ class _AddTabState extends State<AddTab> {
                 DropdownButtonFormField<String>(
                   value: selectedStatus,
                   items:
-                      ["available", "reserved", "overdue"]
+                      ["AVAILABLE", "RESERVED", "OVERDUE"]
                           .map(
                             (status) => DropdownMenuItem(
                               value: status,
@@ -198,7 +204,7 @@ class _AddTabState extends State<AddTab> {
                 DropdownButtonFormField<String>(
                   value: selectedType,
                   items:
-                      ["permanent", "temporary"]
+                      ["PERMANENT", "TEMPORARY"]
                           .map(
                             (type) => DropdownMenuItem(
                               value: type,
@@ -233,6 +239,7 @@ class _AddTabState extends State<AddTab> {
                   locationController.text,
                 );
                 await getAllBuildings();
+                Fluttertoast.showToast(msg: "Locker Added Successfully");
                 setState(() {
                   _isLoading = false;
                 });
@@ -275,6 +282,7 @@ class _AddTabState extends State<AddTab> {
                 setState(() {
                   _isLoading = false;
                 });
+                Fluttertoast.showToast(msg: "Locker Deleted Successfully");
                 Navigator.pop(context);
               },
               child: const Text("Delete"),
@@ -293,7 +301,7 @@ class _AddTabState extends State<AddTab> {
           backgroundColor: Colors.grey[100],
           appBar: AppBar(
             title: const Text(
-              "Manage Buildings",
+              "Manage College",
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Theme.of(context).primaryColor,
@@ -323,14 +331,14 @@ class _AddTabState extends State<AddTab> {
                   child: Column(
                     children: [
                       ListTile(
-                        title: const Text("Add Building"),
+                        title: const Text("Add College"),
                         trailing: IconButton(
                           icon: Icon(Icons.add, color: Colors.green),
                           onPressed: _showAddBuildingDialog,
                         ),
                       ),
                       ListTile(
-                        title: const Text("Delete Building"),
+                        title: const Text("Delete College"),
                         trailing: IconButton(
                           icon: Icon(Icons.delete, color: Colors.red),
                           onPressed: _showDeleteBuildingDialog,
@@ -353,7 +361,7 @@ class _AddTabState extends State<AddTab> {
                             child: ListTile(
                               title: Text(buildings[index].name),
                               subtitle: Text(
-                                "Location: ${buildings[index].location}",
+                                "Locker Room: ${buildings[index].location}",
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,

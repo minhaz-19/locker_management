@@ -20,7 +20,7 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
-  String? _selectedRole = 'Student';
+  String? _selectedRole = 'STUDENT';
 
   bool _isLoading = false;
 
@@ -132,7 +132,7 @@ class _SignUpState extends State<SignUp> {
                                 DropdownButtonFormField<String>(
                                   value: _selectedRole,
                                   items:
-                                      ['Student', 'Visitor'].map((role) {
+                                      ['STUDENT', 'VISITOR'].map((role) {
                                         return DropdownMenuItem(
                                           value: role,
                                           child: Text(role),
