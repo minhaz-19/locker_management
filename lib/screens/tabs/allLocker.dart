@@ -254,7 +254,14 @@ class _AllLockerState extends State<AllLocker> {
                         lockers
                             .where(
                               (locker) =>
-                                  locker.buildingId == selectedBuildingId,
+                                  locker.buildingId == selectedBuildingId &&
+                                  locker.status == "AVAILABLE" &&
+                                  ((UserDetailsProvider().getRole() ==
+                                              "STUDENT" &&
+                                          locker.type == 'PERMANENT') ||
+                                      (UserDetailsProvider().getRole() ==
+                                              "VISITOR" &&
+                                          locker.type == 'TEMPORARY')),
                             )
                             .length,
                     itemBuilder: (context, index) {
@@ -262,10 +269,18 @@ class _AllLockerState extends State<AllLocker> {
                           lockers
                               .where(
                                 (locker) =>
-                                    locker.buildingId == selectedBuildingId,
+                                    locker.buildingId == selectedBuildingId &&
+                                    locker.status == "AVAILABLE" &&
+                                    ((UserDetailsProvider().getRole() ==
+                                                "STUDENT" &&
+                                            locker.type == 'PERMANENT') ||
+                                        (UserDetailsProvider().getRole() ==
+                                                "VISITOR" &&
+                                            locker.type == 'TEMPORARY')),
                               )
                               .toList();
                       var locker = filteredLockers[index];
+
                       return Column(
                         children: [
                           Card(
@@ -276,25 +291,13 @@ class _AllLockerState extends State<AllLocker> {
                                 children: [
                                   Text("Status: ${locker.status}"),
                                   Text("Type: ${locker.type}"),
-                                  Text("Location: ${locker.location}"),
+                                  Text("Locker Room: ${locker.location}"),
                                 ],
                               ),
-                              trailing:
-                                  locker.status != "RESERVED" &&
-                                          ((UserDetailsProvider().getRole() ==
-                                                      "STUDENT" &&
-                                                  locker.type == 'PERMANENT') ||
-                                              (UserDetailsProvider()
-                                                          .getRole() ==
-                                                      "VISITOR" &&
-                                                  locker.type == 'TEMPORARY'))
-                                      ? ElevatedButton(
-                                        onPressed:
-                                            () =>
-                                                _updateLockerStatus(locker.id),
-                                        child: const Text("Reserve"),
-                                      )
-                                      : null,
+                              trailing: ElevatedButton(
+                                onPressed: () => _updateLockerStatus(locker.id),
+                                child: const Text("Reserve"),
+                              ),
                             ),
                           ),
                           if (filteredLockers.length == index + 1)

@@ -106,7 +106,6 @@ class _MyLockerState extends State<MyLocker> {
                 },
               ),
             ],
-            
 
             backgroundColor: Theme.of(context).primaryColor,
             centerTitle: true,
@@ -145,7 +144,8 @@ class _MyLockerState extends State<MyLocker> {
                             ],
                           ),
                           trailing:
-                              locker.status != "APPROVED"
+                              (locker.status != "APPROVED") &&
+                                      (locker.status != "REQUESTED")
                                   ? null
                                   : ElevatedButton(
                                     onPressed:

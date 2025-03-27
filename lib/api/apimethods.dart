@@ -12,7 +12,7 @@ import 'package:locker_management/provider/userDetailsProvider.dart';
 final dio = Dio();
 
 class ApiResponse {
-  final String baseUrl = "http://192.168.0.103:8080";
+  final String baseUrl = "http://192.168.68.187:8080";
 
   // Provide phone number and ruquest for otp
   Future<Response> signUp(
