@@ -180,6 +180,48 @@ class ApiResponse {
     }
   }
 
+  Future<dynamic> editBuildings(
+    String buildingName,
+    String buildingLocation,
+    int totalLocker,
+    int id,
+  ) async {
+    try {
+      final token = UserDetailsProvider().getToken();
+
+      Response response = await dio.post(
+        '$baseUrl/updateBuilding',
+        data: {
+          "name": buildingName,
+          "location": buildingLocation,
+          "totalLocker": totalLocker,
+          "id": id,
+        },
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token", // Send JWT Token
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception("Failed to edit buildings ");
+      }
+    } catch (e) {
+      if (e is DioException) {
+        Fluttertoast.showToast(msg: "Error: ${e.response?.data ?? e.message}");
+
+        throw Exception("API Error: ${e.response?.data}");
+      } else {
+        Fluttertoast.showToast(msg: "Error: $e");
+        throw Exception(e);
+      }
+    }
+  }
+
   Future<dynamic> deleteBuildings(int id) async {
     try {
       final token = UserDetailsProvider().getToken();

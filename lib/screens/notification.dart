@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/notificationModel.dart';
-import 'package:locker_management/screens/tabs/myLocker.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});

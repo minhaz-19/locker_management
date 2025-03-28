@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:locker_management/api/apimethods.dart';
 import 'package:locker_management/component/progressbar.dart';
 import 'package:locker_management/models/all_buildings.dart';
+import 'package:locker_management/screens/editBuilding.dart';
 import 'package:locker_management/screens/notification.dart';
 
 class AddTab extends StatefulWidget {
@@ -367,10 +368,27 @@ class _AddTabState extends State<AddTab> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
+                                    icon: Icon(
+                                      Icons.edit,
+                                      color: Colors.purple,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => EditBuilding(
+                                                buildingId: buildings[index].id,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  IconButton(
                                     icon: Icon(Icons.add, color: Colors.green),
                                     onPressed:
                                         () => _showAddLockerDialog(index),
                                   ),
+
                                   // IconButton(
                                   //   icon: Icon(Icons.delete, color: Colors.red),
                                   //   onPressed:
